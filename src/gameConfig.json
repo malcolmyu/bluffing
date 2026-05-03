@@ -1,0 +1,79 @@
+{
+  "screenSize": {
+    "width": {
+      "value": 1024,
+      "type": "number",
+      "description": "Game width in pixels"
+    },
+    "height": {
+      "value": 768,
+      "type": "number",
+      "description": "Game height in pixels"
+    }
+  },
+  "debugConfig": {
+    "debug": {
+      "value": false,
+      "type": "boolean",
+      "description": "Enable debug mode"
+    }
+  },
+  "renderConfig": {
+    "pixelArt": {
+      "value": false,
+      "type": "boolean",
+      "description": "Enable anti-aliased rendering for crisp text (false = smooth)"
+    }
+  },
+  "playerConfig": {
+    "maxHealth": {
+      "value": 5,
+      "type": "number",
+      "description": "Cat player health (0 = defeat)"
+    },
+    "attackDamage": {
+      "value": 1,
+      "type": "number",
+      "description": "Damage dealt to opponent on winning RPS outcome"
+    }
+  },
+  "enemyConfig": {
+    "maxHealth": {
+      "value": 5,
+      "type": "number",
+      "description": "Dog enemy health (0 = defeat)"
+    },
+    "attackDamage": {
+      "value": 1,
+      "type": "number",
+      "description": "Damage AI deals on winning RPS outcome"
+    },
+    "bluffChance": {
+      "value": 0.4,
+      "type": "number",
+      "description": "Probability AI tells the truth (0.4 = 40% chance honest)"
+    }
+  },
+  "battleConfig": {
+    "countdownDuration": {
+      "value": 3000,
+      "type": "number",
+      "description": "ms for 3-2-1 countdown before attack"
+    },
+    "attackAnimationDuration": {
+      "value": 600,
+      "type": "number",
+      "description": "ms for lunge animation"
+    },
+    "hitAnimationDuration": {
+      "value": 400,
+      "type": "number",
+      "description": "ms for hit shake+flash"
+    },
+    "resultTextDuration": {
+      "value": 1500,
+      "type": "number",
+      "description": "ms to show result text before next round"
+    }
+  }
+}
