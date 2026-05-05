@@ -1,5 +1,4 @@
 import Phaser from 'phaser';
-import { generateAllTextures } from './PetGraphics';
 
 export class TitleScene extends Phaser.Scene {
   constructor() {
@@ -15,8 +14,6 @@ export class TitleScene extends Phaser.Scene {
   }
 
   create(): void {
-    generateAllTextures(this);
-
     const { width, height } = this.cameras.main;
 
     // Warm cream background

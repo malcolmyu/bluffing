@@ -29,7 +29,7 @@
     "maxHealth": {
       "value": 5,
       "type": "number",
-      "description": "Cat player health (0 = defeat)"
+      "description": "Daodun player health (0 = defeat)"
     },
     "attackDamage": {
       "value": 1,
@@ -41,7 +41,7 @@
     "maxHealth": {
       "value": 5,
       "type": "number",
-      "description": "Dog enemy health (0 = defeat)"
+      "description": "Bibilabu enemy health (0 = defeat)"
     },
     "attackDamage": {
       "value": 1,
