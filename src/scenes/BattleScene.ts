@@ -97,25 +97,22 @@ export class BattleScene extends Phaser.Scene {
 
     const hpTextY = 234;
     this.daodunHPText = this.add.text(DAODUN_START_X, hpTextY, `${this.daodunHP} / ${playerConfig.maxHealth.value}`, {
-      fontSize: '33px', color: '#ffffff', fontFamily: 'monospace',
+      fontSize: '33px', color: '#3A3630', fontFamily: 'monospace',
     }).setOrigin(0.5);
     this.bibilabuHPText = this.add.text(BIBILABU_START_X, hpTextY, `${this.bibilabuHP} / ${enemyConfig.maxHealth.value}`, {
-      fontSize: '33px', color: '#ffffff', fontFamily: 'monospace',
+      fontSize: '33px', color: '#3A3630', fontFamily: 'monospace',
     }).setOrigin(0.5);
 
     this.scoreText = this.add.text(width / 2, 30, `刀盾 ${this.playerScore} - ${this.aiScore} 比比拉布`, {
-      fontSize: '42px', color: '#ffeedd', fontFamily: 'monospace', fontStyle: 'bold',
-      stroke: '#000', strokeThickness: 6,
+      fontSize: '42px', color: '#5A5550', fontFamily: 'monospace', fontStyle: 'bold',
     }).setOrigin(0.5);
 
     this.phaseLabel = this.add.text(width / 2, 90, '📢 宣称阶段', {
-      fontSize: '54px', color: '#ffdd88', fontFamily: 'monospace', fontStyle: 'bold',
-      stroke: '#000', strokeThickness: 9,
+      fontSize: '54px', color: '#8A8070', fontFamily: 'monospace', fontStyle: 'bold',
     }).setOrigin(0.5);
 
     this.roundLabel = this.add.text(width / 2, 300, '', {
-      fontSize: '36px', color: '#99aacc', fontFamily: 'monospace',
-      stroke: '#000', strokeThickness: 4,
+      fontSize: '36px', color: '#8A8580', fontFamily: 'monospace',
     }).setOrigin(0.5);
 
     this.daodunBubble = this.createSpeechBubble(DAODUN_START_X, PET_Y - 270, '');
@@ -124,38 +121,35 @@ export class BattleScene extends Phaser.Scene {
     this.bibilabuBubble.setVisible(false);
 
     this.countdownText = this.add.text(width / 2, height / 2 - 60, '', {
-      fontSize: '192px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
-      stroke: '#000', strokeThickness: 24,
+      fontSize: '192px', color: '#3A3630', fontFamily: 'monospace', fontStyle: 'bold',
     }).setOrigin(0.5).setVisible(false).setDepth(100);
 
     const resultBaseY = PET_Y + 330;
     this.resultText = this.add.text(width / 2, resultBaseY, '', {
-      fontSize: '84px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
-      stroke: '#000', strokeThickness: 15,
+      fontSize: '84px', color: '#3A3630', fontFamily: 'monospace', fontStyle: 'bold',
     }).setOrigin(0.5).setVisible(false).setDepth(90);
 
     this.detailText = this.add.text(width / 2, resultBaseY + 84, '', {
-      fontSize: '39px', color: '#ddddee', fontFamily: 'monospace',
-      stroke: '#000', strokeThickness: 9, align: 'center', wordWrap: { width: 1020 },
+      fontSize: '39px', color: '#6A6560', fontFamily: 'monospace',
+      align: 'center', wordWrap: { width: 1020 },
     }).setOrigin(0.5).setVisible(false).setDepth(90);
 
     this.bluffText = this.add.text(width / 2, resultBaseY + 174, '', {
-      fontSize: '42px', color: '#ffcc88', fontFamily: 'monospace', fontStyle: 'bold',
-      stroke: '#000', strokeThickness: 9,
+      fontSize: '42px', color: '#A08850', fontFamily: 'monospace', fontStyle: 'bold',
     }).setOrigin(0.5).setVisible(false).setDepth(90);
 
     this.daodunMoveEmoji = this.add.text(DAODUN_START_X, PET_Y - 330, '', {
-      fontSize: '126px', stroke: '#000', strokeThickness: 12,
+      fontSize: '126px',
     }).setOrigin(0.5).setVisible(false).setDepth(80);
 
     this.bibilabuMoveEmoji = this.add.text(BIBILABU_START_X, PET_Y - 330, '', {
-      fontSize: '126px', stroke: '#000', strokeThickness: 12,
+      fontSize: '126px',
     }).setOrigin(0.5).setVisible(false).setDepth(80);
 
     this.createButtons(width, height);
 
     this.time.delayedCall(500, () => this.startDeclarePhase());
-    this.cameras.main.fadeIn(400, 0, 0, 0);
+    this.cameras.main.fadeIn(400, 253, 251, 247);
   }
 
   // ============================================================
@@ -165,41 +159,39 @@ export class BattleScene extends Phaser.Scene {
   private drawBackground(w: number, h: number): void {
     const bg = this.add.graphics();
 
-    // Deep night sky gradient (top to bottom)
-    const skyColors = [0x0a0a2e, 0x12123a, 0x1a1a3e, 0x15153a, 0x0d0d2a];
+    // Warm cream gradient background
+    const skyColors = [0xFDFBF7, 0xF8F4ED, 0xF0EDE8, 0xF5F2EC, 0xFDFBF7];
     const bandH = h / skyColors.length;
     skyColors.forEach((color, i) => {
       bg.fillStyle(color, 1);
       bg.fillRect(0, i * bandH, w, bandH + 1);
     });
 
-    // Stars (varying sizes and brightness)
-    bg.fillStyle(0xffffff, 0.9);
-    const starPositions = [
-      [120, 80, 3], [340, 150, 2], [580, 60, 4], [890, 120, 2.5], [1050, 90, 3],
-      [80, 280, 2], [260, 340, 3.5], [500, 220, 2], [720, 300, 3], [950, 260, 2],
-      [1090, 350, 3.5], [180, 180, 1.5], [650, 140, 2], [420, 100, 2.5], [780, 200, 1.5],
+    // Subtle warm dots
+    bg.fillStyle(0xD8D0C5, 0.45);
+    const dotPositions = [
+      [120, 80, 2], [340, 150, 1.5], [580, 60, 3], [890, 120, 2], [1050, 90, 2],
+      [80, 280, 1.5], [260, 340, 2.5], [500, 220, 1.5], [720, 300, 2], [950, 260, 1.5],
+      [1090, 350, 2.5], [180, 180, 1], [650, 140, 1.5], [420, 100, 2], [780, 200, 1],
     ];
-    starPositions.forEach(([sx, sy, sr]) => {
+    dotPositions.forEach(([sx, sy, sr]) => {
       bg.fillCircle(sx as number, sy as number, sr as number);
     });
 
-    // Twinkling stars (larger, with cross shape)
-    const crossStars = [[200, 120], [600, 80], [1000, 200], [400, 380]] as const;
-    bg.fillStyle(0xffeebb, 0.7);
-    crossStars.forEach(([csx, csy]) => {
-      bg.fillCircle(csx, csy, 3);
-      // Small cross sparkle
-      bg.fillRect(csx - 6, csy - 1, 12, 2);
-      bg.fillRect(csx - 1, csy - 6, 2, 12);
+    // Subtle cross accents
+    const crossDots = [[200, 120], [600, 80], [1000, 200], [400, 380]] as const;
+    bg.fillStyle(0xD0C8BA, 0.4);
+    crossDots.forEach(([csx, csy]) => {
+      bg.fillCircle(csx, csy, 2);
+      bg.fillRect(csx - 4, csy - 0.5, 8, 1);
+      bg.fillRect(csx - 0.5, csy - 4, 1, 8);
     });
 
-    // Curved stage platform (cartoon bouncy ground)
+    // Curved stage platform (light warm beige)
     const stageY = PET_Y + 195;
-    bg.fillStyle(0x2a1a4a, 1);
+    bg.fillStyle(0xE8E0D5, 1);
     bg.beginPath();
     bg.moveTo(0, stageY + 40);
-    // Curved top edge
     for (let x = 0; x <= w; x += 20) {
       const t = x / w;
       const curve = Math.sin(t * Math.PI) * 30 + Math.sin(t * Math.PI * 2) * 10;
@@ -210,8 +202,8 @@ export class BattleScene extends Phaser.Scene {
     bg.closePath();
     bg.fillPath();
 
-    // Stage highlight (lighter arc)
-    bg.fillStyle(0x3a2a5e, 0.6);
+    // Stage highlight
+    bg.fillStyle(0xF0EBE2, 0.6);
     bg.beginPath();
     bg.moveTo(0, stageY + 42);
     for (let x = 0; x <= w; x += 20) {
@@ -225,11 +217,11 @@ export class BattleScene extends Phaser.Scene {
     bg.fillPath();
 
     // Decorative dots along stage edge
-    bg.fillStyle(0x6655aa, 0.4);
+    bg.fillStyle(0xC5BCAE, 0.4);
     for (let x = 40; x < w; x += 80) {
       const t = x / w;
       const curve = Math.sin(t * Math.PI) * 30 + Math.sin(t * Math.PI * 2) * 10;
-      bg.fillCircle(x, stageY + curve - 4, 6);
+      bg.fillCircle(x, stageY + curve - 4, 5);
     }
 
     bg.setDepth(0);
@@ -254,14 +246,14 @@ export class BattleScene extends Phaser.Scene {
 
     const drawOneBar = (g: Phaser.GameObjects.Graphics, x: number, ratio: number, flipped: boolean) => {
       g.clear();
-      // Outer shadow
-      g.fillStyle(0x000000, 0.4);
-      g.fillRoundedRect(x - barW / 2 + 3, barY + 3, barW, barH, 10);
-      // Background (dark)
-      g.fillStyle(0x222244, 1);
+      // Soft shadow
+      g.fillStyle(0x000000, 0.06);
+      g.fillRoundedRect(x - barW / 2 + 2, barY + 2, barW, barH, 10);
+      // Background
+      g.fillStyle(0xE8E3DA, 1);
       g.fillRoundedRect(x - barW / 2, barY, barW, barH, 10);
-      // Health fill
-      const color = ratio > 0.5 ? 0x55dd77 : ratio > 0.25 ? 0xffcc33 : 0xff5555;
+      // Health fill (soft pastels)
+      const color = ratio > 0.5 ? 0x7ECB8A : ratio > 0.25 ? 0xF0C060 : 0xE87870;
       if (ratio > 0) {
         g.fillStyle(color, 1);
         if (flipped) {
@@ -271,14 +263,8 @@ export class BattleScene extends Phaser.Scene {
         }
       }
       // Border
-      g.lineStyle(3, 0x444488, 1);
+      g.lineStyle(2, 0xC5BDB0, 1);
       g.strokeRoundedRect(x - barW / 2, barY, barW, barH, 10);
-      // Highlight line on top (cartoon shine)
-      g.lineStyle(2, 0xffffff, 0.15);
-      g.beginPath();
-      g.moveTo(x - barW / 2 + 12, barY + 6);
-      g.lineTo(x + barW / 2 - 12, barY + 6);
-      g.strokePath();
     };
 
     const daodunRatio = this.daodunHP / playerConfig.maxHealth.value;
@@ -294,27 +280,27 @@ export class BattleScene extends Phaser.Scene {
   private createSpeechBubble(x: number, y: number, text: string): Phaser.GameObjects.Container {
     const bubbleW = 300; const bubbleH = 96;
     const g = this.add.graphics();
-    // Shadow
-    g.fillStyle(0x000000, 0.2);
-    g.fillRoundedRect(-bubbleW / 2 + 4, -bubbleH / 2 + 4, bubbleW, bubbleH, 24);
+    // Soft shadow
+    g.fillStyle(0x000000, 0.05);
+    g.fillRoundedRect(-bubbleW / 2 + 3, -bubbleH / 2 + 3, bubbleW, bubbleH, 24);
     // Main bubble
-    g.fillStyle(0xfffef5, 0.98);
+    g.fillStyle(0xFFFEFA, 0.98);
     g.fillRoundedRect(-bubbleW / 2, -bubbleH / 2, bubbleW, bubbleH, 24);
-    // Comic border
-    g.lineStyle(4, 0x555577, 1);
+    // Thin border
+    g.lineStyle(2, 0xD0CCC5, 1);
     g.strokeRoundedRect(-bubbleW / 2, -bubbleH / 2, bubbleW, bubbleH, 24);
-    // Comic tail (triangle)
-    g.fillStyle(0xfffef5, 0.98);
-    g.fillTriangle(-18, bubbleH / 2, 18, bubbleH / 2, 0, bubbleH / 2 + 24);
-    g.lineStyle(4, 0x555577, 1);
+    // Tail
+    g.fillStyle(0xFFFEFA, 0.98);
+    g.fillTriangle(-16, bubbleH / 2, 16, bubbleH / 2, 0, bubbleH / 2 + 20);
+    g.lineStyle(2, 0xD0CCC5, 1);
     g.beginPath();
-    g.moveTo(-18, bubbleH / 2);
-    g.lineTo(0, bubbleH / 2 + 24);
-    g.lineTo(18, bubbleH / 2);
+    g.moveTo(-16, bubbleH / 2);
+    g.lineTo(0, bubbleH / 2 + 20);
+    g.lineTo(16, bubbleH / 2);
     g.strokePath();
 
     const txt = this.add.text(0, 0, text, {
-      fontSize: '30px', color: '#333344', fontFamily: 'monospace', fontStyle: 'bold', align: 'center',
+      fontSize: '30px', color: '#3A3630', fontFamily: 'monospace', fontStyle: 'bold', align: 'center',
     }).setOrigin(0.5);
 
     const container = this.add.container(x, y, [g, txt]);
@@ -355,11 +341,11 @@ export class BattleScene extends Phaser.Scene {
     });
 
     this.declareLabel = this.add.text(w / 2, labelY, '📢 宣称你要出的招式  (可以骗人哦！)', {
-      fontSize: '33px', color: '#bbaadd', fontFamily: 'monospace', stroke: '#000', strokeThickness: 6,
+      fontSize: '33px', color: '#8A80A0', fontFamily: 'monospace',
     }).setOrigin(0.5);
 
     this.revealLabel = this.add.text(w / 2, labelY, '🎯 选择你真正要出的招式！', {
-      fontSize: '33px', color: '#ffcc66', fontFamily: 'monospace', stroke: '#000', strokeThickness: 6,
+      fontSize: '33px', color: '#A08040', fontFamily: 'monospace',
     }).setOrigin(0.5).setVisible(false);
   }
 
@@ -368,35 +354,30 @@ export class BattleScene extends Phaser.Scene {
     const bg = this.add.graphics();
     const drawNormal = () => {
       bg.clear();
-      // Shadow
-      bg.fillStyle(0x000000, 0.3);
-      bg.fillRoundedRect(-btnW / 2 + 4, -btnH / 2 + 6, btnW, btnH, 32);
+      // Soft shadow
+      bg.fillStyle(0x000000, 0.06);
+      bg.fillRoundedRect(-btnW / 2 + 3, -btnH / 2 + 4, btnW, btnH, 32);
       // Main fill
-      bg.fillStyle(0x445588, 1);
+      bg.fillStyle(0xF5F0EB, 1);
       bg.fillRoundedRect(-btnW / 2, -btnH / 2, btnW, btnH, 32);
-      // Top shine (cartoon highlight)
-      bg.fillStyle(0x6677aa, 0.5);
-      bg.fillRoundedRect(-btnW / 2 + 12, -btnH / 2 + 6, btnW - 24, btnH / 2 - 6, { tl: 26, tr: 26, bl: 0, br: 0 });
-      // Thick border
-      bg.lineStyle(5, 0x6688cc, 1);
+      // Subtle border
+      bg.lineStyle(2, 0xC5BDB0, 1);
       bg.strokeRoundedRect(-btnW / 2, -btnH / 2, btnW, btnH, 32);
     };
     const drawHover = () => {
       bg.clear();
-      bg.fillStyle(0x000000, 0.3);
-      bg.fillRoundedRect(-btnW / 2 + 4, -btnH / 2 + 6, btnW, btnH, 32);
-      bg.fillStyle(0x5577bb, 1);
+      bg.fillStyle(0x000000, 0.06);
+      bg.fillRoundedRect(-btnW / 2 + 3, -btnH / 2 + 4, btnW, btnH, 32);
+      bg.fillStyle(0xEDE5DA, 1);
       bg.fillRoundedRect(-btnW / 2, -btnH / 2, btnW, btnH, 32);
-      bg.fillStyle(0x7799cc, 0.5);
-      bg.fillRoundedRect(-btnW / 2 + 12, -btnH / 2 + 6, btnW - 24, btnH / 2 - 6, { tl: 26, tr: 26, bl: 0, br: 0 });
-      bg.lineStyle(5, 0x88aaee, 1);
+      bg.lineStyle(2, 0xB5ADA0, 1);
       bg.strokeRoundedRect(-btnW / 2, -btnH / 2, btnW, btnH, 32);
     };
     drawNormal();
 
     const icon = this.add.text(0, -12, emoji, { fontSize: '66px' }).setOrigin(0.5);
     const lbl = this.add.text(0, 48, label, {
-      fontSize: '33px', color: '#ddeeff', fontFamily: 'monospace', fontStyle: 'bold',
+      fontSize: '33px', color: '#4A4540', fontFamily: 'monospace', fontStyle: 'bold',
     }).setOrigin(0.5);
 
     const container = this.add.container(x, y, [bg, icon, lbl]);
@@ -426,7 +407,7 @@ export class BattleScene extends Phaser.Scene {
     this.roundNum++;
 
     this.roundLabel.setText(`第 ${this.roundNum} 回合`);
-    this.phaseLabel.setText('📢 宣称阶段').setColor('#ffdd88');
+    this.phaseLabel.setText('📢 宣称阶段').setColor('#A89850');
 
     this.declareButtons.forEach((b) => { b.setVisible(true); b.setInteractive(true); b.setAlpha(1); });
     this.revealButtons.forEach((b) => b.setVisible(false));
@@ -444,7 +425,7 @@ export class BattleScene extends Phaser.Scene {
     this.playerDeclare = move;
     this.declareButtons.forEach((b) => b.setInteractive(false).setAlpha(0.5));
     this.showBubble(this.daodunBubble, `我要出${RPS_EMOJI[move]}${RPS_NAME[move]}！`);
-    this.phaseLabel.setText(`你宣称：${RPS_EMOJI[move]} ${RPS_NAME[move]}`).setColor('#88ccff');
+    this.phaseLabel.setText(`你宣称：${RPS_EMOJI[move]} ${RPS_NAME[move]}`).setColor('#6090B0');
     this.time.delayedCall(600, () => this.aiChooseDeclare());
   }
 
@@ -459,7 +440,7 @@ export class BattleScene extends Phaser.Scene {
     }
 
     this.showBubble(this.bibilabuBubble, `我要出${RPS_EMOJI[this.aiDeclare!]}${RPS_NAME[this.aiDeclare!]}！`);
-    this.phaseLabel.setText(`比比拉布宣称：${RPS_EMOJI[this.aiDeclare!]} ${RPS_NAME[this.aiDeclare!]}`).setColor('#ffaa66');
+    this.phaseLabel.setText(`比比拉布宣称：${RPS_EMOJI[this.aiDeclare!]} ${RPS_NAME[this.aiDeclare!]}`).setColor('#B08050');
     this.time.delayedCall(1000, () => this.startRevealPhase());
   }
 
@@ -470,7 +451,7 @@ export class BattleScene extends Phaser.Scene {
   private startRevealPhase(): void {
     this.phase = 'reveal';
     this.transitioning = false;
-    this.phaseLabel.setText('🎯 出招阶段').setColor('#66ddff');
+    this.phaseLabel.setText('🎯 出招阶段').setColor('#5090A0');
 
     this.declareButtons.forEach((b) => b.setVisible(false));
     this.revealButtons.forEach((b) => { b.setVisible(true); b.setInteractive(true); b.setAlpha(1); });
@@ -485,7 +466,7 @@ export class BattleScene extends Phaser.Scene {
     this.transitioning = true;
     this.playerActual = move;
     this.revealButtons.forEach((b) => b.setInteractive(false).setAlpha(0.5));
-    this.phaseLabel.setText(`你出招：${RPS_EMOJI[move]} ${RPS_NAME[move]}`).setColor('#88ffaa');
+    this.phaseLabel.setText(`你出招：${RPS_EMOJI[move]} ${RPS_NAME[move]}`).setColor('#509A60');
     this.time.delayedCall(400, () => this.startCountdown());
   }
 
@@ -507,7 +488,7 @@ export class BattleScene extends Phaser.Scene {
       }
       const step = steps[idx];
       this.countdownText.setText(step);
-      this.countdownText.setColor(step === '开始！' ? '#ffcc44' : '#ffffff');
+      this.countdownText.setColor(step === '开始！' ? '#A89830' : '#3A3630');
       this.countdownText.setScale(1.5);
       this.tweens.add({ targets: this.countdownText, scale: 1, duration: 300, ease: 'Back.easeOut' });
       idx++;
@@ -570,8 +551,7 @@ export class BattleScene extends Phaser.Scene {
 
   private showCritText(x: number, y: number): void {
     const crit = this.add.text(x, y - 60, '💥 暴击！', {
-      fontSize: '54px', color: '#ff4444', fontFamily: 'monospace', fontStyle: 'bold',
-      stroke: '#000', strokeThickness: 9,
+      fontSize: '54px', color: '#C05030', fontFamily: 'monospace', fontStyle: 'bold',
     }).setOrigin(0.5).setDepth(200);
     this.tweens.add({
       targets: crit, y: crit.y - 60, alpha: 0, duration: 1000, ease: 'Quad.easeOut',
@@ -629,7 +609,7 @@ export class BattleScene extends Phaser.Scene {
     if (outcome === 'player_win') {
       this.playerScore++;
       const isCrit = !daodunBluffed;
-      this.resultText.setText(isCrit ? '💥 暴击！' : '🎉 你赢了！').setColor(isCrit ? '#ff8844' : '#44ff88');
+      this.resultText.setText(isCrit ? '💥 暴击！' : '🎉 你赢了！').setColor(isCrit ? '#B06030' : '#4A9A5A');
       this.tweens.killTweensOf(this.daodun);
       this.daodun.setTexture('daodun_victory');
       this.tweens.add({
@@ -638,7 +618,7 @@ export class BattleScene extends Phaser.Scene {
       });
     } else if (outcome === 'player_lose') {
       this.aiScore++;
-      this.resultText.setText('😵 比比拉布赢了！').setColor('#ff6666');
+      this.resultText.setText('😵 比比拉布赢了！').setColor('#B04040');
       this.tweens.killTweensOf(this.daodun);
       this.daodun.setTexture('daodun_defeated');
       this.tweens.add({
@@ -652,7 +632,7 @@ export class BattleScene extends Phaser.Scene {
         onComplete: () => { this.bibilabu.setTexture('bibilabu_idle'); },
       });
     } else {
-      this.resultText.setText('🤝 平局！').setColor('#ffcc44');
+      this.resultText.setText('🤝 平局！').setColor('#A89830');
     }
 
     this.scoreText.setText(`刀盾 ${this.playerScore} - ${this.aiScore} 比比拉布`);
@@ -727,16 +707,16 @@ export class BattleScene extends Phaser.Scene {
     if (this.bibilabuHP <= 0) {
       this.daodun.setTexture('daodun_victory');
       this.bibilabu.setTexture('bibilabu_defeated');
-      this.resultText.setText('🏆 胜利！').setColor('#ffdd44').setVisible(true);
-      this.cameras.main.fadeOut(1500, 0, 0, 0);
+      this.resultText.setText('🏆 胜利！').setColor('#A89830').setVisible(true);
+      this.cameras.main.fadeOut(1500, 253, 251, 247);
       this.time.delayedCall(1500, () => {
         this.scene.start('VictoryScene', { playerScore: this.playerScore, aiScore: this.aiScore, rounds: this.roundNum });
       });
     } else {
       this.daodun.setTexture('daodun_defeated');
       this.bibilabu.setTexture('bibilabu_victory');
-      this.resultText.setText('💀 失败...').setColor('#ff4444').setVisible(true);
-      this.cameras.main.fadeOut(1500, 0, 0, 0);
+      this.resultText.setText('💀 失败...').setColor('#B04040').setVisible(true);
+      this.cameras.main.fadeOut(1500, 253, 251, 247);
       this.time.delayedCall(1500, () => {
         this.scene.start('DefeatScene', { playerScore: this.playerScore, aiScore: this.aiScore, rounds: this.roundNum });
       });

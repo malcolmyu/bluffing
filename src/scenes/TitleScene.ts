@@ -19,42 +19,42 @@ export class TitleScene extends Phaser.Scene {
 
     const { width, height } = this.cameras.main;
 
-    // Starry cartoon background
+    // Warm cream background
     const bg = this.add.graphics();
-    const skyColors = [0x0a0a2e, 0x12123a, 0x1a1a3e, 0x15153a, 0x0d0d2a];
+    const skyColors = [0xFDFBF7, 0xF8F4ED, 0xF0EDE8, 0xF5F2EC, 0xFDFBF7];
     const bandH = height / skyColors.length;
     skyColors.forEach((color, i) => {
       bg.fillStyle(color, 1);
       bg.fillRect(0, i * bandH, width, bandH + 1);
     });
-    // Stars
+    // Subtle dots
     const starPositions = [
-      [120, 80, 3], [340, 150, 2], [580, 60, 4], [890, 120, 2.5], [1050, 90, 3],
-      [80, 280, 2], [260, 340, 3.5], [500, 220, 2], [720, 300, 3], [950, 260, 2],
-      [1090, 350, 3.5], [180, 180, 1.5], [650, 140, 2], [420, 100, 2.5], [780, 200, 1.5],
-      [70, 500, 2], [310, 480, 3], [600, 550, 2], [850, 420, 2.5], [1000, 520, 2],
-      [200, 650, 3], [500, 700, 2], [750, 680, 2.5], [900, 750, 2], [1100, 630, 3],
+      [120, 80, 2], [340, 150, 1.5], [580, 60, 3], [890, 120, 2], [1050, 90, 2],
+      [80, 280, 1.5], [260, 340, 2.5], [500, 220, 1.5], [720, 300, 2], [950, 260, 1.5],
+      [1090, 350, 2.5], [180, 180, 1], [650, 140, 1.5], [420, 100, 2], [780, 200, 1],
+      [70, 500, 1.5], [310, 480, 2], [600, 550, 1.5], [850, 420, 2], [1000, 520, 1.5],
+      [200, 650, 2], [500, 700, 1.5], [750, 680, 2], [900, 750, 1.5], [1100, 630, 2],
     ];
     starPositions.forEach(([sx, sy, sr]) => {
-      bg.fillStyle(0xffffff, 0.8);
+      bg.fillStyle(0xD8D0C5, 0.45);
       bg.fillCircle(sx as number, sy as number, sr as number);
     });
-    // Cross-shaped sparkle stars
+    // Subtle cross accents
     const crossStars = [[200, 120], [600, 80], [1000, 200], [400, 380], [850, 550], [150, 600]] as const;
-    bg.fillStyle(0xffeebb, 0.7);
+    bg.fillStyle(0xD0C8BA, 0.4);
     crossStars.forEach(([csx, csy]) => {
-      bg.fillCircle(csx, csy, 3);
-      bg.fillRect(csx - 6, csy - 1, 12, 2);
-      bg.fillRect(csx - 1, csy - 6, 2, 12);
+      bg.fillCircle(csx, csy, 2);
+      bg.fillRect(csx - 4, csy - 0.5, 8, 1);
+      bg.fillRect(csx - 0.5, csy - 4, 1, 8);
     });
 
-    // Decorative ring arcs (subtle orbit lines)
+    // Decorative ring arcs (subtle)
     const decor = this.add.graphics();
-    decor.lineStyle(2, 0x3a3a6e, 0.35);
+    decor.lineStyle(1.5, 0xD8D0C5, 0.35);
     decor.strokeCircle(width / 2, height / 2, 300);
-    decor.lineStyle(1.5, 0x3a3a6e, 0.25);
+    decor.lineStyle(1, 0xD8D0C5, 0.25);
     decor.strokeCircle(width / 2, height / 2, 390);
-    decor.lineStyle(1, 0x3a3a6e, 0.15);
+    decor.lineStyle(1, 0xD8D0C5, 0.15);
     decor.strokeCircle(width / 2, height / 2, 480);
 
     // Small dots along orbit
@@ -63,8 +63,8 @@ export class TitleScene extends Phaser.Scene {
       const r = 345;
       const dx = width / 2 + Math.cos(angle) * r;
       const dy = height / 2 + Math.sin(angle) * r;
-      decor.fillStyle(0x6655aa, 0.4);
-      decor.fillCircle(dx, dy, 5);
+      decor.fillStyle(0xD0C8BA, 0.3);
+      decor.fillCircle(dx, dy, 4);
     }
 
     const daodun = this.add.image(width / 2 - 270, height / 2 + 60, 'daodun_idle').setScale(0.9);
@@ -76,19 +76,17 @@ export class TitleScene extends Phaser.Scene {
 
     // Title
     this.add.text(width / 2, height / 2 - 390, '心口不一', {
-      fontSize: '144px', color: '#ffdd88', fontFamily: 'serif',
-      stroke: '#000', strokeThickness: 18,
+      fontSize: '144px', color: '#7A7060', fontFamily: 'serif',
     }).setOrigin(0.5);
 
     // Subtitle
     this.add.text(width / 2, height / 2 - 246, '剪刀石头布 · 千层饼博弈', {
-      fontSize: '54px', color: '#ccbbaa', fontFamily: 'serif',
-      stroke: '#000', strokeThickness: 9,
+      fontSize: '54px', color: '#8A8580', fontFamily: 'serif',
     }).setOrigin(0.5);
 
     // Description
     this.add.text(width / 2, height / 2 + 285, '宣称一个招式，真正出招时可以反悔！', {
-      fontSize: '36px', color: '#888899', fontFamily: 'monospace',
+      fontSize: '36px', color: '#9A9590', fontFamily: 'monospace',
     }).setOrigin(0.5);
 
     // Start button
@@ -99,31 +97,26 @@ export class TitleScene extends Phaser.Scene {
 
     const drawNormal = () => {
       btnBg.clear();
-      btnBg.fillStyle(0x000000, 0.3);
-      btnBg.fillRoundedRect(btnX + 4, btnY + 6, btnW, btnH, 32);
-      btnBg.fillStyle(0x44aa66, 1);
+      btnBg.fillStyle(0x000000, 0.05);
+      btnBg.fillRoundedRect(btnX + 3, btnY + 4, btnW, btnH, 32);
+      btnBg.fillStyle(0xF5F0EB, 1);
       btnBg.fillRoundedRect(btnX, btnY, btnW, btnH, 32);
-      btnBg.fillStyle(0x66cc88, 0.4);
-      btnBg.fillRoundedRect(btnX + 14, btnY + 8, btnW - 28, btnH / 2 - 4, { tl: 24, tr: 24, bl: 0, br: 0 });
-      btnBg.lineStyle(5, 0x66cc88, 1);
+      btnBg.lineStyle(2, 0xC5BDB0, 1);
       btnBg.strokeRoundedRect(btnX, btnY, btnW, btnH, 32);
     };
     const drawHover = () => {
       btnBg.clear();
-      btnBg.fillStyle(0x000000, 0.3);
-      btnBg.fillRoundedRect(btnX + 4, btnY + 6, btnW, btnH, 32);
-      btnBg.fillStyle(0x55cc77, 1);
+      btnBg.fillStyle(0x000000, 0.05);
+      btnBg.fillRoundedRect(btnX + 3, btnY + 4, btnW, btnH, 32);
+      btnBg.fillStyle(0xEDE5DA, 1);
       btnBg.fillRoundedRect(btnX, btnY, btnW, btnH, 32);
-      btnBg.fillStyle(0x88eebb, 0.4);
-      btnBg.fillRoundedRect(btnX + 14, btnY + 8, btnW - 28, btnH / 2 - 4, { tl: 24, tr: 24, bl: 0, br: 0 });
-      btnBg.lineStyle(5, 0x88eebb, 1);
+      btnBg.lineStyle(2, 0xB5ADA0, 1);
       btnBg.strokeRoundedRect(btnX, btnY, btnW, btnH, 32);
     };
     drawNormal();
 
     this.add.text(width / 2, btnY + btnH / 2, '开始游戏', {
-      fontSize: '51px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
-      stroke: '#000', strokeThickness: 6,
+      fontSize: '51px', color: '#3A3630', fontFamily: 'monospace', fontStyle: 'bold',
     }).setOrigin(0.5);
 
     this.add.zone(width / 2, btnY + btnH / 2, btnW, btnH)
@@ -131,22 +124,22 @@ export class TitleScene extends Phaser.Scene {
       .on('pointerover', drawHover)
       .on('pointerout', drawNormal)
       .on('pointerdown', () => {
-        this.cameras.main.fadeOut(400, 0, 0, 0);
+        this.cameras.main.fadeOut(400, 253, 251, 247);
         this.time.delayedCall(400, () => this.scene.start('BattleScene'));
       });
 
     const start = () => {
-      this.cameras.main.fadeOut(400, 0, 0, 0);
+      this.cameras.main.fadeOut(400, 253, 251, 247);
       this.time.delayedCall(400, () => this.scene.start('BattleScene'));
     };
     this.input.keyboard!.on('keydown-ENTER', start);
     this.input.keyboard!.on('keydown-SPACE', start);
 
     const hint = this.add.text(width / 2, btnY + btnH + 78, '按回车 / 空格  或  点击按钮开始', {
-      fontSize: '30px', color: '#8877aa', fontFamily: 'monospace',
+      fontSize: '30px', color: '#A09890', fontFamily: 'monospace',
     }).setOrigin(0.5);
 
     this.tweens.add({ targets: hint, alpha: 0.3, duration: 800, yoyo: true, repeat: -1 });
-    this.cameras.main.fadeIn(400, 0, 0, 0);
+    this.cameras.main.fadeIn(400, 253, 251, 247);
   }
 }
