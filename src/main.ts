@@ -1,6 +1,9 @@
 import Phaser from 'phaser';
 import { screenSize, renderConfig } from './gameConfig.json';
 
+// Clear AI memory on page load (fresh start for debugging)
+sessionStorage.removeItem('bluffing_ai_memory');
+
 import { TitleScene } from './scenes/TitleScene';
 import { BattleScene } from './scenes/BattleScene';
 import { VictoryScene } from './scenes/VictoryScene';

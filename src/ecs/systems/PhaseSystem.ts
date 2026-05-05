@@ -84,6 +84,7 @@ export class PhaseSystem {
   // ==========================================================
 
   startDeclarePhase(): void {
+    this.ai.getMemory().load();
     this.setPhase('declare');
 
     // Reset intents for both pets
@@ -112,7 +113,7 @@ export class PhaseSystem {
     this.result.setPhaseLabel(`你宣称：${RPS_EMOJI[move]} ${RPS_NAME[move]}`, '#6090B0');
 
     this.scene.time.delayedCall(600, () => {
-      const { declare: aiDeclare } = this.ai.chooseMoves();
+      const { declare: aiDeclare } = this.ai.chooseMoves(move);
       this.decl.showBibilabuBubble(aiDeclare);
       this.result.setPhaseLabel(
         `比比拉布宣称：${RPS_EMOJI[aiDeclare]} ${RPS_NAME[aiDeclare]}`,
@@ -217,6 +218,17 @@ export class PhaseSystem {
     // Update score
     if (event.outcome === 'player_win') score.player++;
     else if (event.outcome === 'player_lose') score.ai++;
+
+    // Record round to AI memory
+    const round = this.world.get<{ number: number }>(this.gameEntity, C.Round)!;
+    this.ai.getMemory().record({
+      round: round.number,
+      playerDeclare: daodunIntent.declare!,
+      playerActual: daodunIntent.actual!,
+      aiDeclare: bibilabuIntent.declare!,
+      aiActual: bibilabuIntent.actual!,
+      outcome: event.outcome,
+    });
 
     // Play pet result animations
     if (event.outcome === 'player_win') {
