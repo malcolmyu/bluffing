@@ -2,7 +2,7 @@ import { defineConfig } from 'vite';
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '',
+  base: process.env.GITHUB_ACTIONS ? '/bluffing/' : '',
   server: {
     host: '::',
     port: 8080,

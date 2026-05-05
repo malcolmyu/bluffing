@@ -22,6 +22,14 @@ coverage/
 # TypeScript
 *.tsbuildinfo
 
+# Test artifacts
+test-output/
+test-results/
+
+# Python cache
+__pycache__/
+*.pyc
+
 # OS
 .DS_Store
 Thumbs.db
