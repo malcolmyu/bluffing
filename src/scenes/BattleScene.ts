@@ -672,12 +672,36 @@ export class BattleScene extends Phaser.Scene {
     this.detailText.setText(detailStr).setVisible(true);
 
     let bluffMsg = '';
-    const daodunHonestWin = outcome === 'player_win' && !daodunBluffed;
-    if (daodunHonestWin) bluffMsg = '💥 诚实暴击！扣 2 分！';
-    else if (daodunBluffed && bibilabuBluffed) bluffMsg = '🃏 两边都骗人了！';
-    else if (daodunBluffed) bluffMsg = '🎭 你骗人成功了！';
-    else if (bibilabuBluffed) bluffMsg = '🐕 比比拉布骗了你！';
-    else bluffMsg = '😇 诚实对决！';
+    if (outcome === 'player_win') {
+      if (!daodunBluffed) {
+        bluffMsg = '💥 诚实暴击！扣 2 分！';
+      } else if (bibilabuBluffed) {
+        bluffMsg = '🃏 两边都骗人了，但你还是赢了！';
+      } else {
+        bluffMsg = '🎭 骗人成功，你赢了！';
+      }
+    } else if (outcome === 'player_lose') {
+      if (daodunBluffed && bibilabuBluffed) {
+        bluffMsg = '🃏 两边都骗了，但你输了...';
+      } else if (daodunBluffed) {
+        bluffMsg = '😞 骗人失败了...';
+      } else if (bibilabuBluffed) {
+        bluffMsg = '🐕 比比拉布骗了你，你输了！';
+      } else {
+        bluffMsg = '😔 诚实对决，但比比拉布赢了...';
+      }
+    } else {
+      // draw
+      if (daodunBluffed && bibilabuBluffed) {
+        bluffMsg = '🃏 两边都骗人了，打个平手！';
+      } else if (daodunBluffed) {
+        bluffMsg = '🎭 你骗人了，但打了个平局';
+      } else if (bibilabuBluffed) {
+        bluffMsg = '🐕 比比拉布骗了你，不过平局！';
+      } else {
+        bluffMsg = '😇 诚实对决，平局！';
+      }
+    }
     this.bluffText.setText(bluffMsg).setVisible(true);
 
     if (this.daodunHP <= 0 || this.bibilabuHP <= 0) {
