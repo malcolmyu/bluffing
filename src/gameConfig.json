@@ -1,14 +1,14 @@
 {
   "screenSize": {
     "width": {
-      "value": 1024,
+      "value": 1170,
       "type": "number",
-      "description": "Game width in pixels"
+      "description": "Game width in pixels (3x Retina portrait)"
     },
     "height": {
-      "value": 768,
+      "value": 2100,
       "type": "number",
-      "description": "Game height in pixels"
+      "description": "Game height in pixels (3x Retina portrait)"
     }
   },
   "debugConfig": {

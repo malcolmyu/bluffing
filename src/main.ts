@@ -6,8 +6,6 @@ import { BattleScene } from './scenes/BattleScene';
 import { VictoryScene } from './scenes/VictoryScene';
 import { DefeatScene } from './scenes/DefeatScene';
 
-const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
   width: screenSize.width.value,
@@ -17,7 +15,7 @@ const config: Phaser.Types.Core.GameConfig = {
   scale: {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
-    zoom: dpr,
+    zoom: 1,
   },
   pixelArt: renderConfig.pixelArt.value,
   antialias: true,

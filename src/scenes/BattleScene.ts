@@ -8,20 +8,20 @@ const RPS_EMOJI: Record<RPS, string> = { rock: '✊', scissors: '✌️', paper:
 const RPS_NAME: Record<RPS, string> = { rock: '石头', scissors: '剪刀', paper: '布' };
 const RPS_WINS_AGAINST: Record<RPS, RPS> = { rock: 'scissors', scissors: 'paper', paper: 'rock' };
 
-const CAT_START_X = 280;
-const DOG_START_X = 744;
-const PET_Y = 400;
+const DAODUN_START_X = 300;
+const BIBILABU_START_X = 870;
+const PET_Y = 930;
 
 export class BattleScene extends Phaser.Scene {
-  private cat!: Phaser.GameObjects.Image;
-  private dog!: Phaser.GameObjects.Image;
+  private daodun!: Phaser.GameObjects.Image;
+  private bibilabu!: Phaser.GameObjects.Image;
 
-  private catHP = playerConfig.maxHealth.value;
-  private dogHP = enemyConfig.maxHealth.value;
-  private catHPBar!: Phaser.GameObjects.Graphics;
-  private dogHPBar!: Phaser.GameObjects.Graphics;
-  private catHPText!: Phaser.GameObjects.Text;
-  private dogHPText!: Phaser.GameObjects.Text;
+  private daodunHP = playerConfig.maxHealth.value;
+  private bibilabuHP = enemyConfig.maxHealth.value;
+  private daodunHPBar!: Phaser.GameObjects.Graphics;
+  private bibilabuHPBar!: Phaser.GameObjects.Graphics;
+  private daodunHPText!: Phaser.GameObjects.Text;
+  private bibilabuHPText!: Phaser.GameObjects.Text;
 
   private playerScore = 0;
   private aiScore = 0;
@@ -41,22 +41,21 @@ export class BattleScene extends Phaser.Scene {
   private declareLabel!: Phaser.GameObjects.Text;
   private revealLabel!: Phaser.GameObjects.Text;
 
-  private catBubble!: Phaser.GameObjects.Container;
-  private dogBubble!: Phaser.GameObjects.Container;
+  private daodunBubble!: Phaser.GameObjects.Container;
+  private bibilabuBubble!: Phaser.GameObjects.Container;
   private countdownText!: Phaser.GameObjects.Text;
   private resultText!: Phaser.GameObjects.Text;
   private detailText!: Phaser.GameObjects.Text;
   private bluffText!: Phaser.GameObjects.Text;
 
-  // Large move emoji displayed above pets during reveal
-  private catMoveEmoji!: Phaser.GameObjects.Text;
-  private dogMoveEmoji!: Phaser.GameObjects.Text;
+  private daodunMoveEmoji!: Phaser.GameObjects.Text;
+  private bibilabuMoveEmoji!: Phaser.GameObjects.Text;
 
   private roundNum = 0;
   private transitioning = false;
 
-  private catHeart!: Phaser.GameObjects.Image;
-  private dogHeart!: Phaser.GameObjects.Image;
+  private daodunHeart!: Phaser.GameObjects.Image;
+  private bibilabuHeart!: Phaser.GameObjects.Image;
 
   constructor() {
     super({ key: 'BattleScene' });
@@ -65,8 +64,8 @@ export class BattleScene extends Phaser.Scene {
   create(): void {
     const { width, height } = this.cameras.main;
 
-    this.catHP = playerConfig.maxHealth.value;
-    this.dogHP = enemyConfig.maxHealth.value;
+    this.daodunHP = playerConfig.maxHealth.value;
+    this.bibilabuHP = enemyConfig.maxHealth.value;
     this.playerScore = 0;
     this.aiScore = 0;
     this.roundNum = 0;
@@ -77,88 +76,82 @@ export class BattleScene extends Phaser.Scene {
     this.aiDeclare = null;
     this.aiActual = null;
 
+    this.declareButtons = [];
+    this.revealButtons = [];
+
     this.drawBackground(width, height);
 
-    const floor = this.add.graphics();
-    floor.fillStyle(0x222244, 0.5);
-    floor.fillEllipse(width / 2, PET_Y + 20, 400, 120);
-    floor.lineStyle(1, 0x333366, 0.3);
-    floor.strokeEllipse(width / 2, PET_Y + 20, 400, 120);
-
-    this.cat = this.add.image(CAT_START_X, PET_Y, 'cat_idle').setScale(1.2);
-    this.dog = this.add.image(DOG_START_X, PET_Y, 'dog_idle').setScale(1.2);
-    this.dog.setFlipX(true);
+    this.daodun = this.add.image(DAODUN_START_X, PET_Y, 'daodun_idle').setScale(0.9).setFlipX(true);
+    this.bibilabu = this.add.image(BIBILABU_START_X, PET_Y, 'bibilabu_idle').setScale(0.9);
     this.startIdleBobbing();
 
-    const barW = 100;
-    this.catHPBar = this.add.graphics();
-    this.dogHPBar = this.add.graphics();
-    this.catHeart = this.add.image(CAT_START_X - barW / 2 - 12, 76, 'heart_icon').setScale(0.6).setDepth(1);
-    this.dogHeart = this.add.image(DOG_START_X - barW / 2 - 12, 76, 'heart_icon').setScale(0.6).setDepth(1);
+    const barW = 240; const barH = 30;
+    this.daodunHPBar = this.add.graphics();
+    this.bibilabuHPBar = this.add.graphics();
+    const heartX1 = DAODUN_START_X - barW / 2 - 30;
+    const heartX2 = BIBILABU_START_X - barW / 2 - 30;
+    const heartY = 180;
+    this.daodunHeart = this.add.image(heartX1, heartY, 'heart_icon').setScale(0.9).setDepth(1);
+    this.bibilabuHeart = this.add.image(heartX2, heartY, 'heart_icon').setScale(0.9).setDepth(1);
     this.drawHealthBars();
 
-    this.catHPText = this.add.text(CAT_START_X, 94, `${this.catHP} / ${playerConfig.maxHealth.value}`, {
-      fontSize: '12px', color: '#ffffff', fontFamily: 'monospace',
+    const hpTextY = 234;
+    this.daodunHPText = this.add.text(DAODUN_START_X, hpTextY, `${this.daodunHP} / ${playerConfig.maxHealth.value}`, {
+      fontSize: '33px', color: '#ffffff', fontFamily: 'monospace',
     }).setOrigin(0.5);
-    this.dogHPText = this.add.text(DOG_START_X, 94, `${this.dogHP} / ${enemyConfig.maxHealth.value}`, {
-      fontSize: '12px', color: '#ffffff', fontFamily: 'monospace',
-    }).setOrigin(0.5);
-
-    // Score — Chinese
-    this.scoreText = this.add.text(width / 2, 12, `猫猫 ${this.playerScore} - ${this.aiScore} 小狗`, {
-      fontSize: '16px', color: '#ccccdd', fontFamily: 'monospace', fontStyle: 'bold',
-      stroke: '#000', strokeThickness: 2,
+    this.bibilabuHPText = this.add.text(BIBILABU_START_X, hpTextY, `${this.bibilabuHP} / ${enemyConfig.maxHealth.value}`, {
+      fontSize: '33px', color: '#ffffff', fontFamily: 'monospace',
     }).setOrigin(0.5);
 
-    // Phase label
-    this.phaseLabel = this.add.text(width / 2, 36, '宣称阶段', {
-      fontSize: '20px', color: '#ffdd88', fontFamily: 'monospace', fontStyle: 'bold',
-      stroke: '#000', strokeThickness: 3,
+    this.scoreText = this.add.text(width / 2, 30, `刀盾 ${this.playerScore} - ${this.aiScore} 比比拉布`, {
+      fontSize: '42px', color: '#ffeedd', fontFamily: 'monospace', fontStyle: 'bold',
+      stroke: '#000', strokeThickness: 6,
     }).setOrigin(0.5);
 
-    this.roundLabel = this.add.text(width / 2, 112, '', {
-      fontSize: '13px', color: '#888899', fontFamily: 'monospace',
+    this.phaseLabel = this.add.text(width / 2, 90, '📢 宣称阶段', {
+      fontSize: '54px', color: '#ffdd88', fontFamily: 'monospace', fontStyle: 'bold',
+      stroke: '#000', strokeThickness: 9,
     }).setOrigin(0.5);
 
-    // Speech bubbles
-    this.catBubble = this.createSpeechBubble(CAT_START_X, PET_Y - 80, '');
-    this.catBubble.setVisible(false);
-    this.dogBubble = this.createSpeechBubble(DOG_START_X, PET_Y - 80, '');
-    this.dogBubble.setVisible(false);
+    this.roundLabel = this.add.text(width / 2, 300, '', {
+      fontSize: '36px', color: '#99aacc', fontFamily: 'monospace',
+      stroke: '#000', strokeThickness: 4,
+    }).setOrigin(0.5);
 
-    // Countdown
-    this.countdownText = this.add.text(width / 2, height / 2 - 40, '', {
-      fontSize: '72px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
-      stroke: '#000', strokeThickness: 8,
+    this.daodunBubble = this.createSpeechBubble(DAODUN_START_X, PET_Y - 270, '');
+    this.daodunBubble.setVisible(false);
+    this.bibilabuBubble = this.createSpeechBubble(BIBILABU_START_X, PET_Y - 270, '');
+    this.bibilabuBubble.setVisible(false);
+
+    this.countdownText = this.add.text(width / 2, height / 2 - 60, '', {
+      fontSize: '192px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
+      stroke: '#000', strokeThickness: 24,
     }).setOrigin(0.5).setVisible(false).setDepth(100);
 
-    // Result
-    this.resultText = this.add.text(width / 2, height / 2 - 100, '', {
-      fontSize: '32px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
-      stroke: '#000', strokeThickness: 5,
+    const resultBaseY = PET_Y + 330;
+    this.resultText = this.add.text(width / 2, resultBaseY, '', {
+      fontSize: '84px', color: '#ffffff', fontFamily: 'monospace', fontStyle: 'bold',
+      stroke: '#000', strokeThickness: 15,
     }).setOrigin(0.5).setVisible(false).setDepth(90);
 
-    // Detail text (shows declared vs actual)
-    this.detailText = this.add.text(width / 2, height / 2 - 55, '', {
-      fontSize: '15px', color: '#ddddee', fontFamily: 'monospace',
-      stroke: '#000', strokeThickness: 3, align: 'center',
+    this.detailText = this.add.text(width / 2, resultBaseY + 84, '', {
+      fontSize: '39px', color: '#ddddee', fontFamily: 'monospace',
+      stroke: '#000', strokeThickness: 9, align: 'center', wordWrap: { width: 1020 },
     }).setOrigin(0.5).setVisible(false).setDepth(90);
 
-    this.bluffText = this.add.text(width / 2, height / 2 - 35, '', {
-      fontSize: '16px', color: '#ffcc88', fontFamily: 'monospace', fontStyle: 'bold',
-      stroke: '#000', strokeThickness: 3,
+    this.bluffText = this.add.text(width / 2, resultBaseY + 174, '', {
+      fontSize: '42px', color: '#ffcc88', fontFamily: 'monospace', fontStyle: 'bold',
+      stroke: '#000', strokeThickness: 9,
     }).setOrigin(0.5).setVisible(false).setDepth(90);
 
-    // Large move emoji above pets (used during reveal)
-    this.catMoveEmoji = this.add.text(CAT_START_X, PET_Y - 105, '', {
-      fontSize: '48px', stroke: '#000', strokeThickness: 4,
+    this.daodunMoveEmoji = this.add.text(DAODUN_START_X, PET_Y - 330, '', {
+      fontSize: '126px', stroke: '#000', strokeThickness: 12,
     }).setOrigin(0.5).setVisible(false).setDepth(80);
 
-    this.dogMoveEmoji = this.add.text(DOG_START_X, PET_Y - 105, '', {
-      fontSize: '48px', stroke: '#000', strokeThickness: 4,
+    this.bibilabuMoveEmoji = this.add.text(BIBILABU_START_X, PET_Y - 330, '', {
+      fontSize: '126px', stroke: '#000', strokeThickness: 12,
     }).setOrigin(0.5).setVisible(false).setDepth(80);
 
-    // Buttons
     this.createButtons(width, height);
 
     this.time.delayedCall(500, () => this.startDeclarePhase());
@@ -171,15 +164,75 @@ export class BattleScene extends Phaser.Scene {
 
   private drawBackground(w: number, h: number): void {
     const bg = this.add.graphics();
-    bg.fillStyle(0x1a1a2e, 1);
-    bg.fillRect(0, 0, w, h);
-    bg.fillStyle(0x16213e, 0.5);
-    bg.fillRect(0, 0, w, h / 2);
-    bg.lineStyle(2, 0x2a2a4e, 0.5);
-    bg.lineBetween(0, PET_Y + 50, w, PET_Y + 50);
-    bg.lineStyle(1, 0x333366, 0.2);
-    bg.lineBetween(0, PET_Y + 50, w / 2, PET_Y + 10);
-    bg.lineBetween(w, PET_Y + 50, w / 2, PET_Y + 10);
+
+    // Deep night sky gradient (top to bottom)
+    const skyColors = [0x0a0a2e, 0x12123a, 0x1a1a3e, 0x15153a, 0x0d0d2a];
+    const bandH = h / skyColors.length;
+    skyColors.forEach((color, i) => {
+      bg.fillStyle(color, 1);
+      bg.fillRect(0, i * bandH, w, bandH + 1);
+    });
+
+    // Stars (varying sizes and brightness)
+    bg.fillStyle(0xffffff, 0.9);
+    const starPositions = [
+      [120, 80, 3], [340, 150, 2], [580, 60, 4], [890, 120, 2.5], [1050, 90, 3],
+      [80, 280, 2], [260, 340, 3.5], [500, 220, 2], [720, 300, 3], [950, 260, 2],
+      [1090, 350, 3.5], [180, 180, 1.5], [650, 140, 2], [420, 100, 2.5], [780, 200, 1.5],
+    ];
+    starPositions.forEach(([sx, sy, sr]) => {
+      bg.fillCircle(sx as number, sy as number, sr as number);
+    });
+
+    // Twinkling stars (larger, with cross shape)
+    const crossStars = [[200, 120], [600, 80], [1000, 200], [400, 380]] as const;
+    bg.fillStyle(0xffeebb, 0.7);
+    crossStars.forEach(([csx, csy]) => {
+      bg.fillCircle(csx, csy, 3);
+      // Small cross sparkle
+      bg.fillRect(csx - 6, csy - 1, 12, 2);
+      bg.fillRect(csx - 1, csy - 6, 2, 12);
+    });
+
+    // Curved stage platform (cartoon bouncy ground)
+    const stageY = PET_Y + 195;
+    bg.fillStyle(0x2a1a4a, 1);
+    bg.beginPath();
+    bg.moveTo(0, stageY + 40);
+    // Curved top edge
+    for (let x = 0; x <= w; x += 20) {
+      const t = x / w;
+      const curve = Math.sin(t * Math.PI) * 30 + Math.sin(t * Math.PI * 2) * 10;
+      bg.lineTo(x, stageY + curve);
+    }
+    bg.lineTo(w, h);
+    bg.lineTo(0, h);
+    bg.closePath();
+    bg.fillPath();
+
+    // Stage highlight (lighter arc)
+    bg.fillStyle(0x3a2a5e, 0.6);
+    bg.beginPath();
+    bg.moveTo(0, stageY + 42);
+    for (let x = 0; x <= w; x += 20) {
+      const t = x / w;
+      const curve = Math.sin(t * Math.PI) * 20;
+      bg.lineTo(x, stageY + 8 + curve);
+    }
+    bg.lineTo(w, h);
+    bg.lineTo(0, h);
+    bg.closePath();
+    bg.fillPath();
+
+    // Decorative dots along stage edge
+    bg.fillStyle(0x6655aa, 0.4);
+    for (let x = 40; x < w; x += 80) {
+      const t = x / w;
+      const curve = Math.sin(t * Math.PI) * 30 + Math.sin(t * Math.PI * 2) * 10;
+      bg.fillCircle(x, stageY + curve - 4, 6);
+    }
+
+    bg.setDepth(0);
   }
 
   // ============================================================
@@ -187,8 +240,8 @@ export class BattleScene extends Phaser.Scene {
   // ============================================================
 
   private startIdleBobbing(): void {
-    this.tweens.add({ targets: this.cat, y: PET_Y - 3, duration: 800, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-    this.tweens.add({ targets: this.dog, y: PET_Y - 3, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    this.tweens.add({ targets: this.daodun, y: PET_Y - 9, duration: 800, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
+    this.tweens.add({ targets: this.bibilabu, y: PET_Y - 9, duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
   }
 
   // ============================================================
@@ -196,20 +249,42 @@ export class BattleScene extends Phaser.Scene {
   // ============================================================
 
   private drawHealthBars(): void {
-    const barW = 100; const barH = 12;
-    this.catHPBar.clear();
-    this.catHPBar.fillStyle(0x333333, 1);
-    this.catHPBar.fillRect(CAT_START_X - barW / 2 - 1, 70, barW + 2, barH + 2);
-    const catRatio = this.catHP / playerConfig.maxHealth.value;
-    this.catHPBar.fillStyle(catRatio > 0.5 ? 0x44cc66 : catRatio > 0.25 ? 0xddcc44 : 0xdd4444, 1);
-    this.catHPBar.fillRect(CAT_START_X - barW / 2, 71, barW * catRatio, barH);
+    const barW = 240; const barH = 30;
+    const barY = 165;
 
-    this.dogHPBar.clear();
-    this.dogHPBar.fillStyle(0x333333, 1);
-    this.dogHPBar.fillRect(DOG_START_X - barW / 2 - 1, 70, barW + 2, barH + 2);
-    const dogRatio = this.dogHP / enemyConfig.maxHealth.value;
-    this.dogHPBar.fillStyle(dogRatio > 0.5 ? 0x44cc66 : dogRatio > 0.25 ? 0xddcc44 : 0xdd4444, 1);
-    this.dogHPBar.fillRect(DOG_START_X - barW / 2, 71, barW * dogRatio, barH);
+    const drawOneBar = (g: Phaser.GameObjects.Graphics, x: number, ratio: number, flipped: boolean) => {
+      g.clear();
+      // Outer shadow
+      g.fillStyle(0x000000, 0.4);
+      g.fillRoundedRect(x - barW / 2 + 3, barY + 3, barW, barH, 10);
+      // Background (dark)
+      g.fillStyle(0x222244, 1);
+      g.fillRoundedRect(x - barW / 2, barY, barW, barH, 10);
+      // Health fill
+      const color = ratio > 0.5 ? 0x55dd77 : ratio > 0.25 ? 0xffcc33 : 0xff5555;
+      if (ratio > 0) {
+        g.fillStyle(color, 1);
+        if (flipped) {
+          g.fillRoundedRect(x + barW / 2 - barW * ratio, barY, barW * ratio, barH, 8);
+        } else {
+          g.fillRoundedRect(x - barW / 2, barY, barW * ratio, barH, 8);
+        }
+      }
+      // Border
+      g.lineStyle(3, 0x444488, 1);
+      g.strokeRoundedRect(x - barW / 2, barY, barW, barH, 10);
+      // Highlight line on top (cartoon shine)
+      g.lineStyle(2, 0xffffff, 0.15);
+      g.beginPath();
+      g.moveTo(x - barW / 2 + 12, barY + 6);
+      g.lineTo(x + barW / 2 - 12, barY + 6);
+      g.strokePath();
+    };
+
+    const daodunRatio = this.daodunHP / playerConfig.maxHealth.value;
+    drawOneBar(this.daodunHPBar, DAODUN_START_X, daodunRatio, false);
+    const bibilabuRatio = this.bibilabuHP / enemyConfig.maxHealth.value;
+    drawOneBar(this.bibilabuHPBar, BIBILABU_START_X, bibilabuRatio, true);
   }
 
   // ============================================================
@@ -217,17 +292,29 @@ export class BattleScene extends Phaser.Scene {
   // ============================================================
 
   private createSpeechBubble(x: number, y: number, text: string): Phaser.GameObjects.Container {
-    const bubbleW = 110; const bubbleH = 36;
+    const bubbleW = 300; const bubbleH = 96;
     const g = this.add.graphics();
-    g.fillStyle(0xffffff, 0.95);
-    g.fillRoundedRect(-bubbleW / 2, -bubbleH / 2, bubbleW, bubbleH, 8);
-    g.lineStyle(1.5, 0x666666, 1);
-    g.strokeRoundedRect(-bubbleW / 2, -bubbleH / 2, bubbleW, bubbleH, 8);
-    g.fillStyle(0xffffff, 0.95);
-    g.fillTriangle(-8, bubbleH / 2, 8, bubbleH / 2, 0, bubbleH / 2 + 10);
+    // Shadow
+    g.fillStyle(0x000000, 0.2);
+    g.fillRoundedRect(-bubbleW / 2 + 4, -bubbleH / 2 + 4, bubbleW, bubbleH, 24);
+    // Main bubble
+    g.fillStyle(0xfffef5, 0.98);
+    g.fillRoundedRect(-bubbleW / 2, -bubbleH / 2, bubbleW, bubbleH, 24);
+    // Comic border
+    g.lineStyle(4, 0x555577, 1);
+    g.strokeRoundedRect(-bubbleW / 2, -bubbleH / 2, bubbleW, bubbleH, 24);
+    // Comic tail (triangle)
+    g.fillStyle(0xfffef5, 0.98);
+    g.fillTriangle(-18, bubbleH / 2, 18, bubbleH / 2, 0, bubbleH / 2 + 24);
+    g.lineStyle(4, 0x555577, 1);
+    g.beginPath();
+    g.moveTo(-18, bubbleH / 2);
+    g.lineTo(0, bubbleH / 2 + 24);
+    g.lineTo(18, bubbleH / 2);
+    g.strokePath();
 
     const txt = this.add.text(0, 0, text, {
-      fontSize: '11px', color: '#333333', fontFamily: 'monospace', fontStyle: 'bold', align: 'center',
+      fontSize: '30px', color: '#333344', fontFamily: 'monospace', fontStyle: 'bold', align: 'center',
     }).setOrigin(0.5);
 
     const container = this.add.container(x, y, [g, txt]);
@@ -252,9 +339,11 @@ export class BattleScene extends Phaser.Scene {
 
   private createButtons(w: number, h: number): void {
     const moves: RPS[] = ['rock', 'scissors', 'paper'];
-    const btnY = h - 70;
-    const btnSpacing = 110;
+    const btnY = h - 195;
+    const btnSpacing = 315;
     const startX = w / 2 - btnSpacing;
+
+    const labelY = h - 306;
 
     moves.forEach((move, i) => {
       const bx = startX + i * btnSpacing;
@@ -265,42 +354,57 @@ export class BattleScene extends Phaser.Scene {
       this.revealButtons.push(revealBtn);
     });
 
-    this.declareLabel = this.add.text(w / 2, h - 110, '📢 宣称你要出的招式（可以骗人！）', {
-      fontSize: '13px', color: '#aaaacc', fontFamily: 'monospace', stroke: '#000', strokeThickness: 2,
+    this.declareLabel = this.add.text(w / 2, labelY, '📢 宣称你要出的招式  (可以骗人哦！)', {
+      fontSize: '33px', color: '#bbaadd', fontFamily: 'monospace', stroke: '#000', strokeThickness: 6,
     }).setOrigin(0.5);
 
-    this.revealLabel = this.add.text(w / 2, h - 110, '🎯 选择真正的出招！', {
-      fontSize: '13px', color: '#ffcc66', fontFamily: 'monospace', stroke: '#000', strokeThickness: 2,
+    this.revealLabel = this.add.text(w / 2, labelY, '🎯 选择你真正要出的招式！', {
+      fontSize: '33px', color: '#ffcc66', fontFamily: 'monospace', stroke: '#000', strokeThickness: 6,
     }).setOrigin(0.5).setVisible(false);
   }
 
   private createSingleButton(x: number, y: number, emoji: string, label: string, callback: () => void): Phaser.GameObjects.Container {
-    const btnW = 90; const btnH = 50;
+    const btnW = 255; const btnH = 144;
     const bg = this.add.graphics();
     const drawNormal = () => {
       bg.clear();
-      bg.fillStyle(0x334466, 1);
-      bg.fillRoundedRect(-btnW / 2, -btnH / 2, btnW, btnH, 10);
-      bg.lineStyle(2, 0x5577aa, 1);
-      bg.strokeRoundedRect(-btnW / 2, -btnH / 2, btnW, btnH, 10);
+      // Shadow
+      bg.fillStyle(0x000000, 0.3);
+      bg.fillRoundedRect(-btnW / 2 + 4, -btnH / 2 + 6, btnW, btnH, 32);
+      // Main fill
+      bg.fillStyle(0x445588, 1);
+      bg.fillRoundedRect(-btnW / 2, -btnH / 2, btnW, btnH, 32);
+      // Top shine (cartoon highlight)
+      bg.fillStyle(0x6677aa, 0.5);
+      bg.fillRoundedRect(-btnW / 2 + 12, -btnH / 2 + 6, btnW - 24, btnH / 2 - 6, { tl: 26, tr: 26, bl: 0, br: 0 });
+      // Thick border
+      bg.lineStyle(5, 0x6688cc, 1);
+      bg.strokeRoundedRect(-btnW / 2, -btnH / 2, btnW, btnH, 32);
     };
     const drawHover = () => {
       bg.clear();
-      bg.fillStyle(0x445588, 1);
-      bg.fillRoundedRect(-btnW / 2, -btnH / 2, btnW, btnH, 10);
-      bg.lineStyle(2, 0x7799cc, 1);
-      bg.strokeRoundedRect(-btnW / 2, -btnH / 2, btnW, btnH, 10);
+      bg.fillStyle(0x000000, 0.3);
+      bg.fillRoundedRect(-btnW / 2 + 4, -btnH / 2 + 6, btnW, btnH, 32);
+      bg.fillStyle(0x5577bb, 1);
+      bg.fillRoundedRect(-btnW / 2, -btnH / 2, btnW, btnH, 32);
+      bg.fillStyle(0x7799cc, 0.5);
+      bg.fillRoundedRect(-btnW / 2 + 12, -btnH / 2 + 6, btnW - 24, btnH / 2 - 6, { tl: 26, tr: 26, bl: 0, br: 0 });
+      bg.lineStyle(5, 0x88aaee, 1);
+      bg.strokeRoundedRect(-btnW / 2, -btnH / 2, btnW, btnH, 32);
     };
     drawNormal();
 
-    const icon = this.add.text(0, -6, emoji, { fontSize: '24px' }).setOrigin(0.5);
-    const lbl = this.add.text(0, 16, label, {
-      fontSize: '12px', color: '#aabbcc', fontFamily: 'monospace', fontStyle: 'bold',
+    const icon = this.add.text(0, -12, emoji, { fontSize: '66px' }).setOrigin(0.5);
+    const lbl = this.add.text(0, 48, label, {
+      fontSize: '33px', color: '#ddeeff', fontFamily: 'monospace', fontStyle: 'bold',
     }).setOrigin(0.5);
 
     const container = this.add.container(x, y, [bg, icon, lbl]);
-    container.setSize(btnW, btnH);
-    container.setInteractive({ useHandCursor: true });
+    container.setInteractive(
+      new Phaser.Geom.Rectangle(-btnW / 2, -btnH / 2, btnW, btnH),
+      Phaser.Geom.Rectangle.Contains,
+    );
+    container.input!.cursor = 'pointer';
     container.setDepth(60);
     container.on('pointerover', drawHover);
     container.on('pointerout', drawNormal);
@@ -328,10 +432,10 @@ export class BattleScene extends Phaser.Scene {
     this.revealButtons.forEach((b) => b.setVisible(false));
     this.declareLabel.setVisible(true);
     this.revealLabel.setVisible(false);
-    this.catBubble.setVisible(false);
-    this.dogBubble.setVisible(false);
-    this.catMoveEmoji.setVisible(false);
-    this.dogMoveEmoji.setVisible(false);
+    this.daodunBubble.setVisible(false);
+    this.bibilabuBubble.setVisible(false);
+    this.daodunMoveEmoji.setVisible(false);
+    this.bibilabuMoveEmoji.setVisible(false);
   }
 
   private onDeclareClick(move: RPS): void {
@@ -339,7 +443,7 @@ export class BattleScene extends Phaser.Scene {
     this.transitioning = true;
     this.playerDeclare = move;
     this.declareButtons.forEach((b) => b.setInteractive(false).setAlpha(0.5));
-    this.showBubble(this.catBubble, `我要出${RPS_EMOJI[move]}${RPS_NAME[move]}！`);
+    this.showBubble(this.daodunBubble, `我要出${RPS_EMOJI[move]}${RPS_NAME[move]}！`);
     this.phaseLabel.setText(`你宣称：${RPS_EMOJI[move]} ${RPS_NAME[move]}`).setColor('#88ccff');
     this.time.delayedCall(600, () => this.aiChooseDeclare());
   }
@@ -354,8 +458,8 @@ export class BattleScene extends Phaser.Scene {
       this.aiDeclare = Phaser.Math.RND.pick(moves.filter((m) => m !== this.aiActual));
     }
 
-    this.showBubble(this.dogBubble, `我要出${RPS_EMOJI[this.aiDeclare!]}${RPS_NAME[this.aiDeclare!]}！`);
-    this.phaseLabel.setText(`小狗宣称：${RPS_EMOJI[this.aiDeclare!]} ${RPS_NAME[this.aiDeclare!]}`).setColor('#ffaa66');
+    this.showBubble(this.bibilabuBubble, `我要出${RPS_EMOJI[this.aiDeclare!]}${RPS_NAME[this.aiDeclare!]}！`);
+    this.phaseLabel.setText(`比比拉布宣称：${RPS_EMOJI[this.aiDeclare!]} ${RPS_NAME[this.aiDeclare!]}`).setColor('#ffaa66');
     this.time.delayedCall(1000, () => this.startRevealPhase());
   }
 
@@ -372,8 +476,8 @@ export class BattleScene extends Phaser.Scene {
     this.revealButtons.forEach((b) => { b.setVisible(true); b.setInteractive(true); b.setAlpha(1); });
     this.declareLabel.setVisible(false);
     this.revealLabel.setVisible(true);
-    this.catBubble.setVisible(false);
-    this.dogBubble.setVisible(false);
+    this.daodunBubble.setVisible(false);
+    this.bibilabuBubble.setVisible(false);
   }
 
   private onRevealClick(move: RPS): void {
@@ -412,13 +516,12 @@ export class BattleScene extends Phaser.Scene {
     showNext();
   }
 
-  // Show both actual moves as large emoji above pets
   private revealMoves(): void {
-    this.catMoveEmoji.setText(RPS_EMOJI[this.playerActual!]).setVisible(true).setAlpha(0).setScale(0.3);
-    this.tweens.add({ targets: this.catMoveEmoji, alpha: 1, scale: 1.2, duration: 300, ease: 'Back.easeOut' });
+    this.daodunMoveEmoji.setText(RPS_EMOJI[this.playerActual!]).setVisible(true).setAlpha(0).setScale(0.3);
+    this.tweens.add({ targets: this.daodunMoveEmoji, alpha: 1, scale: 1.1, duration: 300, ease: 'Back.easeOut' });
 
-    this.dogMoveEmoji.setText(RPS_EMOJI[this.aiActual!]).setVisible(true).setAlpha(0).setScale(0.3);
-    this.tweens.add({ targets: this.dogMoveEmoji, alpha: 1, scale: 1.2, duration: 300, ease: 'Back.easeOut' });
+    this.bibilabuMoveEmoji.setText(RPS_EMOJI[this.aiActual!]).setVisible(true).setAlpha(0).setScale(0.3);
+    this.tweens.add({ targets: this.bibilabuMoveEmoji, alpha: 1, scale: 1.1, duration: 300, ease: 'Back.easeOut' });
   }
 
   // ============================================================
@@ -427,65 +530,81 @@ export class BattleScene extends Phaser.Scene {
 
   private executeAttack(): void {
     this.phase = 'attack';
-    const catMove = this.playerActual!;
-    const dogMove = this.aiActual!;
-    const catWins = RPS_WINS_AGAINST[catMove] === dogMove;
-    const dogWins = RPS_WINS_AGAINST[dogMove] === catMove;
-    const isDraw = catMove === dogMove;
+    const daodunMove = this.playerActual!;
+    const bibilabuMove = this.aiActual!;
+    const daodunWins = RPS_WINS_AGAINST[daodunMove] === bibilabuMove;
+    const bibilabuWins = RPS_WINS_AGAINST[bibilabuMove] === daodunMove;
+    const isDraw = daodunMove === bibilabuMove;
 
     if (isDraw) {
-      this.playAttackAnim(this.cat, 'cat_attack', CAT_START_X, 1);
-      this.playAttackAnim(this.dog, 'dog_attack', DOG_START_X, -1);
+      this.playAttackAnim(this.daodun, DAODUN_START_X, -1, 'daodun');
+      this.playAttackAnim(this.bibilabu, BIBILABU_START_X, 1, 'bibilabu');
       this.time.delayedCall(500, () => {
-        this.playHitAnim(this.cat, 'cat_hit', CAT_START_X);
-        this.playHitAnim(this.dog, 'dog_hit', DOG_START_X);
+        this.playHitAnim(this.daodun, DAODUN_START_X, 'daodun');
+        this.playHitAnim(this.bibilabu, BIBILABU_START_X, 'bibilabu');
       });
       this.time.delayedCall(1200, () => this.showResult('draw'));
-    } else if (catWins) {
-      this.playAttackAnim(this.cat, 'cat_attack', CAT_START_X, 1);
+    } else if (daodunWins) {
+      const isCrit = this.playerDeclare === this.playerActual;
+      const dmg = isCrit ? 2 : 1;
+      this.playAttackAnim(this.daodun, DAODUN_START_X, -1, 'daodun');
       this.time.delayedCall(200, () => {
-        this.dogHP = Math.max(0, this.dogHP - 1);
+        this.bibilabuHP = Math.max(0, this.bibilabuHP - dmg);
         this.drawHealthBars();
-        this.dogHPText.setText(`${this.dogHP} / ${enemyConfig.maxHealth.value}`);
-        this.playHitAnim(this.dog, 'dog_hit', DOG_START_X);
+        this.bibilabuHPText.setText(`${this.bibilabuHP} / ${enemyConfig.maxHealth.value}`);
+        this.playHitAnim(this.bibilabu, BIBILABU_START_X, 'bibilabu', isCrit);
+        if (isCrit) this.showCritText(BIBILABU_START_X, PET_Y);
       });
       this.time.delayedCall(1200, () => this.showResult('player_win'));
     } else {
-      this.playAttackAnim(this.dog, 'dog_attack', DOG_START_X, -1);
+      this.playAttackAnim(this.bibilabu, BIBILABU_START_X, 1, 'bibilabu');
       this.time.delayedCall(200, () => {
-        this.catHP = Math.max(0, this.catHP - 1);
+        this.daodunHP = Math.max(0, this.daodunHP - 1);
         this.drawHealthBars();
-        this.catHPText.setText(`${this.catHP} / ${playerConfig.maxHealth.value}`);
-        this.playHitAnim(this.cat, 'cat_hit', CAT_START_X);
+        this.daodunHPText.setText(`${this.daodunHP} / ${playerConfig.maxHealth.value}`);
+        this.playHitAnim(this.daodun, DAODUN_START_X, 'daodun');
       });
       this.time.delayedCall(1200, () => this.showResult('player_lose'));
     }
   }
 
-  private playAttackAnim(sprite: Phaser.GameObjects.Image, texKey: string, startX: number, dir: number): void {
-    this.tweens.killTweensOf(sprite);
-    sprite.setTexture(texKey);
+  private showCritText(x: number, y: number): void {
+    const crit = this.add.text(x, y - 60, '💥 暴击！', {
+      fontSize: '54px', color: '#ff4444', fontFamily: 'monospace', fontStyle: 'bold',
+      stroke: '#000', strokeThickness: 9,
+    }).setOrigin(0.5).setDepth(200);
     this.tweens.add({
-      targets: sprite, x: startX + dir * 60, duration: 200, ease: 'Quad.easeOut', yoyo: true,
+      targets: crit, y: crit.y - 60, alpha: 0, duration: 1000, ease: 'Quad.easeOut',
+      onComplete: () => crit.destroy(),
+    });
+  }
+
+  private playAttackAnim(sprite: Phaser.GameObjects.Image, startX: number, dir: number, pet: 'daodun' | 'bibilabu'): void {
+    this.tweens.killTweensOf(sprite);
+    sprite.setTexture(`${pet}_attack`);
+    this.tweens.add({
+      targets: sprite, x: startX + dir * 150, duration: 200, ease: 'Quad.easeOut', yoyo: true,
       onComplete: () => {
         sprite.x = startX;
-        sprite.setTexture(texKey.startsWith('cat') ? 'cat_idle' : 'dog_idle');
+        sprite.setTexture(`${pet}_idle`);
       },
     });
   }
 
-  private playHitAnim(sprite: Phaser.GameObjects.Image, texKey: string, startX: number): void {
+  private playHitAnim(sprite: Phaser.GameObjects.Image, startX: number, pet: 'daodun' | 'bibilabu', isCrit = false): void {
     this.tweens.killTweensOf(sprite);
-    sprite.setTexture(texKey);
-    const dir = texKey.startsWith('cat') ? -1 : 1;
+    sprite.setTexture(`${pet}_hit`);
+    const dir = pet === 'daodun' ? -1 : 1;
+    const shakeDist = isCrit ? 60 : 45;
+    const shakeRepeat = isCrit ? 5 : 3;
     this.tweens.add({
-      targets: sprite, x: startX + dir * 20, duration: 60, yoyo: true, repeat: 3,
+      targets: sprite, x: startX + dir * shakeDist, duration: 60, yoyo: true, repeat: shakeRepeat,
       onComplete: () => {
         sprite.x = startX;
-        sprite.setTint(0xff4444);
+        sprite.setTint(isCrit ? 0xff8800 : 0xff4444);
         this.time.delayedCall(150, () => {
           sprite.clearTint();
-          sprite.setTexture(texKey.startsWith('cat') ? 'cat_idle' : 'dog_idle');
+          sprite.setTexture(`${pet}_idle`);
           if (this.phase !== 'game_over') this.startIdleBobbing();
         });
       },
@@ -499,68 +618,69 @@ export class BattleScene extends Phaser.Scene {
   private showResult(outcome: 'player_win' | 'player_lose' | 'draw'): void {
     this.phase = 'result';
 
-    const catBluffed = this.playerDeclare !== this.playerActual;
-    const dogBluffed = this.aiDeclare !== this.aiActual;
+    const daodunBluffed = this.playerDeclare !== this.playerActual;
+    const bibilabuBluffed = this.aiDeclare !== this.aiActual;
 
-    // Hide move emojis after a moment
     this.time.delayedCall(200, () => {
-      this.catMoveEmoji.setVisible(false);
-      this.dogMoveEmoji.setVisible(false);
+      this.daodunMoveEmoji.setVisible(false);
+      this.bibilabuMoveEmoji.setVisible(false);
     });
 
     if (outcome === 'player_win') {
       this.playerScore++;
-      this.resultText.setText('🎉 你赢了！').setColor('#44ff88');
-      this.tweens.killTweensOf(this.cat);
-      this.cat.setTexture('cat_victory');
+      const isCrit = !daodunBluffed;
+      this.resultText.setText(isCrit ? '💥 暴击！' : '🎉 你赢了！').setColor(isCrit ? '#ff8844' : '#44ff88');
+      this.tweens.killTweensOf(this.daodun);
+      this.daodun.setTexture('daodun_victory');
       this.tweens.add({
-        targets: this.cat, y: PET_Y - 20, duration: 300, yoyo: true, ease: 'Back.easeOut',
-        onComplete: () => { this.cat.setTexture('cat_idle'); this.startIdleBobbing(); },
+        targets: this.daodun, y: PET_Y - 60, duration: 300, yoyo: true, ease: 'Back.easeOut',
+        onComplete: () => { this.daodun.setTexture('daodun_idle'); this.startIdleBobbing(); },
       });
     } else if (outcome === 'player_lose') {
       this.aiScore++;
-      this.resultText.setText('😵 小狗赢了！').setColor('#ff6666');
-      this.tweens.killTweensOf(this.cat);
-      this.cat.setTexture('cat_defeated');
+      this.resultText.setText('😵 比比拉布赢了！').setColor('#ff6666');
+      this.tweens.killTweensOf(this.daodun);
+      this.daodun.setTexture('daodun_defeated');
       this.tweens.add({
-        targets: this.cat, y: PET_Y + 10, duration: 400, ease: 'Bounce.easeOut',
-        onComplete: () => { this.cat.setTexture('cat_idle'); this.startIdleBobbing(); },
+        targets: this.daodun, y: PET_Y + 30, duration: 400, ease: 'Bounce.easeOut',
+        onComplete: () => { this.daodun.setTexture('daodun_idle'); this.startIdleBobbing(); },
       });
-      this.tweens.killTweensOf(this.dog);
-      this.dog.setTexture('dog_victory');
+      this.tweens.killTweensOf(this.bibilabu);
+      this.bibilabu.setTexture('bibilabu_victory');
       this.tweens.add({
-        targets: this.dog, y: PET_Y - 20, duration: 300, yoyo: true, ease: 'Back.easeOut',
-        onComplete: () => { this.dog.setTexture('dog_idle'); },
+        targets: this.bibilabu, y: PET_Y - 60, duration: 300, yoyo: true, ease: 'Back.easeOut',
+        onComplete: () => { this.bibilabu.setTexture('bibilabu_idle'); },
       });
     } else {
       this.resultText.setText('🤝 平局！').setColor('#ffcc44');
     }
 
-    this.scoreText.setText(`猫猫 ${this.playerScore} - ${this.aiScore} 小狗`);
+    this.scoreText.setText(`刀盾 ${this.playerScore} - ${this.aiScore} 比比拉布`);
     this.resultText.setVisible(true);
 
-    // Detail: show declared → actual for both sides
     const playerDeclareText = `${RPS_EMOJI[this.playerDeclare!]}${RPS_NAME[this.playerDeclare!]}`;
     const playerActualText = `${RPS_EMOJI[this.playerActual!]}${RPS_NAME[this.playerActual!]}`;
     const aiDeclareText = `${RPS_EMOJI[this.aiDeclare!]}${RPS_NAME[this.aiDeclare!]}`;
     const aiActualText = `${RPS_EMOJI[this.aiActual!]}${RPS_NAME[this.aiActual!]}`;
 
     let detailStr = '';
-    if (!catBluffed && !dogBluffed) {
-      detailStr = `双方诚实：你出 ${playerActualText}  vs  小狗出 ${aiActualText}`;
+    if (!daodunBluffed && !bibilabuBluffed) {
+      detailStr = `双方诚实：你出 ${playerActualText}  vs  比比拉布出 ${aiActualText}`;
     } else {
-      detailStr = `你：宣称${playerDeclareText} → 实际${playerActualText}\n小狗：宣称${aiDeclareText} → 实际${aiActualText}`;
+      detailStr = `你：宣称${playerDeclareText} → 实际${playerActualText}\n比比拉布：宣称${aiDeclareText} → 实际${aiActualText}`;
     }
     this.detailText.setText(detailStr).setVisible(true);
 
     let bluffMsg = '';
-    if (catBluffed && dogBluffed) bluffMsg = '🃏 两边都骗人了！';
-    else if (catBluffed) bluffMsg = '🎭 你骗人成功了！';
-    else if (dogBluffed) bluffMsg = '🐕 小狗骗了你！';
+    const daodunHonestWin = outcome === 'player_win' && !daodunBluffed;
+    if (daodunHonestWin) bluffMsg = '💥 诚实暴击！扣 2 分！';
+    else if (daodunBluffed && bibilabuBluffed) bluffMsg = '🃏 两边都骗人了！';
+    else if (daodunBluffed) bluffMsg = '🎭 你骗人成功了！';
+    else if (bibilabuBluffed) bluffMsg = '🐕 比比拉布骗了你！';
     else bluffMsg = '😇 诚实对决！';
     this.bluffText.setText(bluffMsg).setVisible(true);
 
-    if (this.catHP <= 0 || this.dogHP <= 0) {
+    if (this.daodunHP <= 0 || this.bibilabuHP <= 0) {
       this.time.delayedCall(2000, () => this.endGame());
     } else {
       this.time.delayedCall(2500, () => {
@@ -580,17 +700,17 @@ export class BattleScene extends Phaser.Scene {
     this.phase = 'game_over';
     this.phaseLabel.setText('');
 
-    if (this.dogHP <= 0) {
-      this.cat.setTexture('cat_victory');
-      this.dog.setTexture('dog_defeated');
+    if (this.bibilabuHP <= 0) {
+      this.daodun.setTexture('daodun_victory');
+      this.bibilabu.setTexture('bibilabu_defeated');
       this.resultText.setText('🏆 胜利！').setColor('#ffdd44').setVisible(true);
       this.cameras.main.fadeOut(1500, 0, 0, 0);
       this.time.delayedCall(1500, () => {
         this.scene.start('VictoryScene', { playerScore: this.playerScore, aiScore: this.aiScore, rounds: this.roundNum });
       });
     } else {
-      this.cat.setTexture('cat_defeated');
-      this.dog.setTexture('dog_victory');
+      this.daodun.setTexture('daodun_defeated');
+      this.bibilabu.setTexture('bibilabu_victory');
       this.resultText.setText('💀 失败...').setColor('#ff4444').setVisible(true);
       this.cameras.main.fadeOut(1500, 0, 0, 0);
       this.time.delayedCall(1500, () => {
