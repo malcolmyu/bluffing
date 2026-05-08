@@ -63,7 +63,8 @@ export class AnimationSystem {
     const startX = pos.x;
     const dir = pet === 'daodun' ? -1 : 1;
     const shakeDist = isCrit ? 60 : 45;
-    const shakeRepeat = isCrit ? 5 : 3;
+    const shakeRepeat = isCrit ? 5 : 4;
+    const shakeDur = 80;
 
     if (vs) vs.state = 'hit';
     this.scene.tweens.killTweensOf(img);
@@ -71,14 +72,14 @@ export class AnimationSystem {
     this.scene.tweens.add({
       targets: img,
       x: startX + dir * shakeDist,
-      duration: 60,
+      duration: shakeDur,
       yoyo: true,
       repeat: shakeRepeat,
       onComplete: () => {
         img.x = startX;
         pos.x = startX;
         img.setTint(isCrit ? 0xff8800 : 0xff4444);
-        this.scene.time.delayedCall(150, () => {
+        this.scene.time.delayedCall(400, () => {
           img.clearTint();
           img.setTexture(`${pet}_idle`);
           if (vs) vs.state = 'idle';

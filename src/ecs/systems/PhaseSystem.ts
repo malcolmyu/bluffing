@@ -196,7 +196,7 @@ export class PhaseSystem {
       });
     }
 
-    this.scene.time.delayedCall(1200, () => this.showResult());
+    this.scene.time.delayedCall(1800, () => this.showResult());
   }
 
   // ==========================================================
