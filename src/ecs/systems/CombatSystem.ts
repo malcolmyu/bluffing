@@ -45,11 +45,11 @@ export class CombatSystem {
       outcome = 'player_win';
       // Crit: player was honest AND won
       isCrit = daodunDeclare === daodunMove;
-      const dmg = isCrit ? 2 : 1;
+      const dmg = isCrit ? 20 : 10;
       bibilabuHP.current = Math.max(0, bibilabuHP.current - dmg);
     } else {
       outcome = 'player_lose';
-      daodunHP.current = Math.max(0, daodunHP.current - 1);
+      daodunHP.current = Math.max(0, daodunHP.current - 10);
     }
 
     const event: CombatEventData = { outcome, isCrit };

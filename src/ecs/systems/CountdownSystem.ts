@@ -54,7 +54,7 @@ export class CountdownSystem {
   /** Run 3-2-1-开始！ countdown, then call onComplete. */
   runCountdown(onComplete: () => void): void {
     this.countdownText.setVisible(true);
-    const steps = ['3', '2', '1', '开始！'];
+    const steps = ['5', '4', '3', '2', '1', '开始！'];
     let idx = 0;
     const showNext = () => {
       if (idx >= steps.length) {
@@ -68,7 +68,7 @@ export class CountdownSystem {
       this.countdownText.setScale(1.5);
       this.scene.tweens.add({ targets: this.countdownText, scale: 1, duration: 300, ease: 'Back.easeOut' });
       idx++;
-      this.scene.time.delayedCall(500, showNext);
+      this.scene.time.delayedCall(800, showNext);
     };
     showNext();
   }
